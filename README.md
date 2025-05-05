@@ -2,9 +2,6 @@
 
 A Flask web application for generating cryptographically secure passwords with a focus on compatibility with configuration files (YAML, TOML, INI) and shell environments (like Ansible). It provides granular control over included character types and detailed risk assessment for special characters.
 
-![Screenshot Placeholder](images/screenshot.png) 
-*(Suggestion: Replace the above line with an actual screenshot path/link after creating one)*
-
 ## Features
 
 *   **Web-Based GUI:** Easy-to-use interface built with Flask.
@@ -94,3 +91,7 @@ Contributions are welcome! Please feel free to submit a Pull Request or open an 
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 *(Suggestion: Create a LICENSE file with the MIT License text or choose another appropriate license)*
+
+## Screenshot
+![image](https://github.com/user-attachments/assets/576820bd-a7fe-4b5c-9f84-30ef3daa54b0)
+
