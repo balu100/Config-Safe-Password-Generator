@@ -87,11 +87,6 @@ A Flask web application for generating cryptographically secure passwords with a
 Contributions are welcome! Please feel free to submit a Pull Request or open an Issue.
 *(Optional: Add more specific contribution guidelines if desired)*
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-*(Suggestion: Create a LICENSE file with the MIT License text or choose another appropriate license)*
-
 ## Screenshot
 ![image](https://github.com/user-attachments/assets/576820bd-a7fe-4b5c-9f84-30ef3daa54b0)
 
