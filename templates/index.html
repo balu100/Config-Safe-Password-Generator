@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Config-Safe Password Generator</title>
+    <style>
+        /* --- Base & Typography --- */
+        :root {
+            --primary-color: #007bff; /* Blue */
+            --secondary-color: #6c757d; /* Gray */
+            --success-color: #28a745; /* Green */
+            --danger-color: #dc3545; /* Red */
+            --warning-color: #ffc107; /* Yellow */
+            --info-color: #17a2b8; /* Teal */
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --white-color: #ffffff;
+            --border-color: #dee2e6;
+            --input-border-color: #ced4da;
+            --focus-ring-color: rgba(0, 123, 255, 0.25);
+            --body-bg: #f8f9fa; /* Slightly off-white background */
+            --card-bg: var(--white-color);
+            --text-color: #212529;
+            --text-muted: #6c757d;
+            --font-family-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            --border-radius: 0.3rem; /* Slightly more rounded corners */
+            --box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1); /* Softer shadow */
+        }
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+        html {
+            font-size: 16px; /* Base font size */
+            -webkit-text-size-adjust: 100%;
+            -webkit-tap-highlight-color: rgba(0,0,0,0); /* Remove tap highlight on mobile */
+        }
+        body {
+            font-family: var(--font-family-sans-serif);
+            line-height: 1.6;
+            background-color: var(--body-bg);
+            color: var(--text-color);
+            margin: 0;
+            padding: 1.5rem 1rem; /* Add padding around the body */
+            display: flex; /* Use flex to center container vertically if desired */
+            justify-content: center;
+            align-items: flex-start; /* Align to top */
+            min-height: 100vh;
+        }
+
+        /* --- Layout Container --- */
+        .container {
+            width: 100%;
+            max-width: 960px; /* Comfortable max width */
+            background: var(--card-bg);
+            padding: 2rem 2.5rem; /* Generous padding */
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            border: 1px solid var(--border-color);
+            margin-top: 1rem; /* Space from top */
+            margin-bottom: 2rem; /* Space at bottom */
+        }
+
+        /* --- Headings & Text --- */
+        h1 {
+            text-align: center;
+            color: var(--dark-color);
+            margin-bottom: 2rem;
+            font-weight: 500;
+            font-size: 1.8rem;
+        }
+        p, .info {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+        }
+        code {
+            font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            padding: 0.2em 0.4em;
+            margin: 0;
+            font-size: 85%;
+            background-color: rgba(27,31,35,.05);
+            border-radius: 3px;
+        }
+
+        /* --- Form Elements --- */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        label:not(.checkbox-label):not(.special-char-item label) { /* Style general labels */
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark-color);
+            font-size: 1rem;
+        }
+        input[type="number"],
+        input[type="text"] {
+            display: block;
+            width: 100%;
+            padding: 0.6rem 0.9rem;
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 1.5;
+            color: var(--text-color);
+            background-color: var(--white-color);
+            background-clip: padding-box;
+            border: 1px solid var(--input-border-color);
+            appearance: none; /* Modern reset */
+            border-radius: var(--border-radius);
+            transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+        }
+        input[type="number"]:focus,
+        input[type="text"]:focus {
+             border-color: var(--primary-color);
+             outline: 0;
+             box-shadow: 0 0 0 0.2rem var(--focus-ring-color);
+        }
+        /* Nicer focus for keyboard users */
+        input[type="number"]:focus-visible,
+        input[type="text"]:focus-visible {
+             box-shadow: 0 0 0 0.2rem var(--focus-ring-color);
+        }
+
+        /* Checkboxes */
+        input[type="checkbox"] {
+            width: 1.1em;
+            height: 1.1em;
+            margin-top: 0.2em; /* Better vertical alignment */
+            vertical-align: top;
+            background-color: var(--white-color);
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: contain;
+            border: 1px solid rgba(0,0,0,.25);
+            appearance: none;
+            border-radius: 0.25em;
+            transition: background-color .15s ease-in-out, border-color .15s ease-in-out;
+        }
+        input[type="checkbox"]:checked {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M6 10l3 3l6-6'/%3e%3c/svg%3e");
+        }
+        input[type="checkbox"]:focus {
+            border-color: var(--primary-color);
+            outline: 0;
+            box-shadow: 0 0 0 0.2rem var(--focus-ring-color);
+        }
+        .checkbox-label {
+            display: inline-flex; /* Use flex for alignment */
+            align-items: flex-start; /* Align text to top of checkbox */
+            gap: 0.5rem; /* Space between checkbox and text */
+            margin-bottom: 0.75rem;
+            margin-right: 1.25rem;
+            font-weight: 400;
+            color: var(--text-color);
+            cursor: pointer;
+            line-height: 1.4; /* Adjust line height for label */
+        }
+         .checkbox-label span { /* Allow text to wrap */
+             display: inline;
+         }
+
+
+        /* Fieldset for Special Characters */
+        fieldset {
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 1.5rem 1.75rem;
+            margin-bottom: 2rem;
+            background-color: var(--light-color);
+        }
+        legend {
+            font-weight: 500;
+            padding: 0 0.75rem; /* Horizontal padding */
+            color: var(--dark-color);
+            font-size: 1.1rem;
+            margin-bottom: 1rem; /* Space below legend */
+            background-color: var(--light-color); /* Match fieldset background */
+            float: left; /* Allow border to wrap nicely */
+            width: auto; /* Reset width if previously set */
+        }
+        fieldset > *:last-child { margin-bottom: 0; } /* Remove margin from last item in fieldset */
+
+        /* Special Character Grid */
+        .special-char-list {
+            display: grid;
+            /* More adaptive columns: minimum 180px, maximum 1 fraction unit */
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem; /* Spacing between items */
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0 0 0; /* Add margin above list */
+            clear: both; /* Ensure it's below the floated legend */
+        }
+        .special-char-item {
+             background-color: var(--white-color);
+             padding: 0.75rem 1rem;
+             border-radius: var(--border-radius);
+             border: 1px solid var(--border-color);
+             transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+        .special-char-item:hover {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
+        }
+        .special-char-item label {
+            display: flex; /* Use flex for layout inside label */
+            flex-direction: column; /* Stack elements vertically */
+            font-weight: 400;
+            cursor: pointer;
+            color: var(--text-color);
+            width: 100%;
+            gap: 0.25rem; /* Space between elements inside label */
+        }
+         .special-char-item .char-line { /* Group checkbox, char, risk */
+             display: flex;
+             align-items: center;
+             gap: 0.5rem;
+         }
+        .char { font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-weight: bold; font-size: 1.15em; min-width: 18px; text-align: center;}
+        .risk { font-size: 0.75em; padding: 0.15rem 0.5rem; border-radius: 10px; color: var(--white-color); line-height: 1.2; }
+        .risk-None { background-color: var(--secondary-color); }
+        .risk-Low { background-color: var(--info-color); }
+        .risk-Medium { background-color: var(--warning-color); color: var(--dark-color); } /* Dark text on yellow */
+        .risk-High { background-color: var(--danger-color); }
+        .char-reason {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.3;
+            padding-left: 0.25rem; /* Slight indent */
+        }
+
+        /* --- Buttons --- */
+        .btn { /* Base button style */
+            display: inline-block;
+            font-weight: 500;
+            line-height: 1.5;
+            color: var(--white-color);
+            text-align: center;
+            text-decoration: none;
+            vertical-align: middle;
+            cursor: pointer;
+            user-select: none;
+            background-color: transparent;
+            border: 1px solid transparent;
+            padding: 0.6rem 1.2rem;
+            font-size: 1rem;
+            border-radius: var(--border-radius);
+            transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+        }
+        .btn:focus-visible {
+             outline: 0;
+             box-shadow: 0 0 0 0.2rem var(--focus-ring-color);
+        }
+
+        .btn-primary { background-color: var(--primary-color); border-color: var(--primary-color); }
+        .btn-primary:hover { background-color: #0056b3; border-color: #0056b3; }
+
+        .btn-success { background-color: var(--success-color); border-color: var(--success-color); }
+        .btn-success:hover { background-color: #1e7e34; border-color: #1e7e34; }
+
+        .btn-warning { background-color: var(--warning-color); border-color: var(--warning-color); color: var(--dark-color); }
+        .btn-warning:hover { background-color: #e0a800; border-color: #e0a800; }
+
+        .btn-block { display: block; width: 100%; }
+        .btn-lg { padding: 0.8rem 1.5rem; font-size: 1.1rem; }
+
+
+        /* --- Result Area --- */
+        .result {
+            margin-top: 2.5rem; /* More space above result */
+            padding: 1.5rem;
+            background-color: var(--light-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            position: relative;
+        }
+         .result label {
+             margin-bottom: 0.75rem;
+             font-weight: 500;
+         }
+         .result .password-display { /* Wrapper for input + button */
+             position: relative;
+             display: flex; /* Use flex to align input and button */
+         }
+         .result input[type="text"] {
+            background-color: var(--white-color);
+            font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-size: 1.2rem; /* Larger password font */
+            padding-right: 75px; /* Make space for copy button */
+            flex-grow: 1; /* Allow input to take available space */
+        }
+         .result .copy-btn { /* Copy Button */
+             position: absolute;
+             right: 6px; /* Position inside the input padding area */
+             top: 50%;
+             transform: translateY(-50%); /* Center vertically */
+             padding: 0.35rem 0.75rem;
+             font-size: 0.9em;
+             z-index: 5; /* Ensure button is clickable */
+         }
+
+        /* --- Alerts & Errors --- */
+        .alert {
+            position: relative;
+            padding: 1rem 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid transparent;
+            border-radius: var(--border-radius);
+            margin-top: 1.5rem;
+        }
+        .alert-danger, .error { /* Use same style for error div */
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        .alert-warning { color: #856404; background-color: #fff3cd; border-color: #ffeeba; }
+        .alert-info { color: #0c5460; background-color: #d1ecf1; border-color: #bee5eb; }
+        .alert-success { color: #155724; background-color: #d4edda; border-color: #c3e6cb; }
+
+
+        /* --- Responsive Adjustments --- */
+        @media (max-width: 768px) {
+            body { padding: 1rem 0.5rem; }
+            .container {
+                padding: 1.5rem;
+                margin-top: 0.5rem;
+            }
+            h1 { font-size: 1.6rem; margin-bottom: 1.5rem; }
+            fieldset { padding: 1rem 1.25rem; }
+            legend { font-size: 1rem; }
+            .special-char-list {
+                 grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); /* Smaller min width */
+                 gap: 0.75rem;
+            }
+            .btn-lg { padding: 0.7rem 1.2rem; font-size: 1rem; }
+            .result input[type="text"] { font-size: 1.1rem; }
+        }
+
+        @media (max-width: 576px) {
+             .checkbox-label {
+                 margin-right: 0.5rem;
+                 /* Optional: Stack base type checkboxes */
+                 /* display: flex; width: 100%; */
+             }
+              /* Stack requirement checkboxes */
+             fieldset .checkbox-label { display: flex; width: 100%;}
+
+             .special-char-list {
+                 grid-template-columns: 1fr; /* Single column */
+             }
+             .result .copy-btn {
+                 padding: 0.3rem 0.6rem;
+                 font-size: 0.8em;
+             }
+             .result input[type="text"] { padding-right: 65px; font-size: 1rem;}
+             body { padding: 0.5rem 0.25rem; }
+             .container { padding: 1rem; width: 98%; }
+             h1 { font-size: 1.4rem; }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Config-Safe Password Generator</h1>
+
+        <form method="POST" action="/">
+            <!-- Standard Options -->
+            <div class="form-group">
+                <label for="length">Password Length:</label>
+                <input type="number" id="length" name="length" min="1" max="128" value="{{ form_values.length }}" required>
+            </div>
+
+            <div class="form-group">
+                <label>Base Character Types:</label>
+                <div>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="use_lower" value="yes" {% if form_values.use_lower %}checked{% endif %}>
+                        <span>Lowercase (a-z)</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="use_upper" value="yes" {% if form_values.use_upper %}checked{% endif %}>
+                        <span>Uppercase (A-Z)</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="use_digits" value="yes" {% if form_values.use_digits %}checked{% endif %}>
+                        <span>Digits (0-9)</span>
+                    </label>
+                </div>
+            </div>
+
+             <!-- Special Character Options -->
+             <fieldset>
+                 <legend>Special Characters</legend>
+                 <div class="form-group">
+                     <label class="checkbox-label">
+                         <input type="checkbox" name="use_special" id="use_special_toggle" value="yes" {% if form_values.use_special %}checked{% endif %} onchange="toggleSpecialSelection()">
+                         <span>Include Special Characters</span>
+                     </label>
+                     <!-- Requirement Options -->
+                     <div style="margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+                         <label class="checkbox-label" title="Require at least one character from the selected special pool">
+                            <input type="checkbox" name="require_special" value="yes" {% if form_values.require_special %}checked{% endif %}>
+                            <span>Require <strong>any</strong> selected special</span>
+                        </label>
+                         <br>
+                         <label class="checkbox-label" title="Require one of EACH selected special character below (increases minimum length)">
+                            <input type="checkbox" name="require_each_selected_special" value="yes" {% if form_values.require_each_selected_special %}checked{% endif %}>
+                            <span>Require <strong>each</strong> selected special</span>
+                        </label>
+                    </div>
+                    <p class="info" style="margin-top: 1rem;">Select specific special characters to include below. Default safe set is: <code>{{ default_safe_special }}</code></p>
+                 </div>
+
+                 <div id="special-selection-area" style="{{ 'display: block;' if form_values.use_special else 'display: none;' }}">
+                     <ul class="special-char-list">
+                         {% for item in special_char_info | sort(attribute='risk_level') %}
+                         <li class="special-char-item"> <!-- Removed risk class from LI, using span -->
+                             <label>
+                                 <div class="char-line">
+                                     <input type="checkbox" name="selected_specials" value="{{ item.char }}"
+                                            {% if item.char in form_values.selected_specials %}checked{% endif %}>
+                                     <span class="char">{{ item.char }}</span>
+                                     <span class="risk risk-{{ item.risk }}">{{ item.risk }}</span>
+                                 </div>
+                                 <span class="char-reason">{{ item.reason }}</span>
+                             </label>
+                         </li>
+                         {% endfor %}
+                     </ul>
+                 </div>
+             </fieldset>
+
+            <button type="submit" class="btn btn-success btn-lg btn-block">Generate Password</button>
+        </form>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% if error %}
+            <div class="alert alert-danger"> <!-- Use alert class for consistency -->
+                <strong>Error:</strong> {{ error }}
+            </div>
+        {% endif %}
+
+        {% if password %}
+            <div class="result">
+                <label for="generated_password">Generated Password:</label>
+                <div class="password-display">
+                    <input type="text" id="generated_password" value="{{ password }}" readonly>
+                    <button type="button" class="btn btn-primary copy-btn" onclick="copyPassword()">Copy</button>
+                </div>
+            </div>
+        {% endif %}
+
+    </div>
+
+    <script>
+        // (Keep existing JavaScript functions: copyPassword, toggleSpecialSelection)
+        function copyPassword() {
+            const passwordField = document.getElementById('generated_password');
+            passwordField.select();
+            passwordField.setSelectionRange(0, 99999); // For mobile devices
+            try {
+                document.execCommand('copy');
+                const copyButton = event.target;
+                const originalText = copyButton.textContent;
+                copyButton.textContent = 'Copied!';
+                copyButton.classList.remove('btn-primary');
+                copyButton.classList.add('btn-success'); // Change color on success
+                setTimeout(() => {
+                    copyButton.textContent = originalText;
+                    copyButton.classList.remove('btn-success');
+                    copyButton.classList.add('btn-primary');
+                }, 2000); // Reset after 2s
+            } catch (err) {
+                alert('Failed to copy password. Please copy it manually.');
+            }
+             // Deselect text after copying attempt
+             window.getSelection().removeAllRanges();
+             // Optionally blur the input field
+             // passwordField.blur();
+        }
+        function toggleSpecialSelection() {
+            const useSpecialCheckbox = document.getElementById('use_special_toggle');
+            const selectionArea = document.getElementById('special-selection-area');
+            selectionArea.style.display = useSpecialCheckbox.checked ? 'block' : 'none';
+        }
+        // Run on page load to set initial state
+        document.addEventListener('DOMContentLoaded', toggleSpecialSelection);
+    </script>
+
+</body>
+</html>
