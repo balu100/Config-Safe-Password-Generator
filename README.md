@@ -88,5 +88,6 @@ Contributions are welcome! Please feel free to submit a Pull Request or open an 
 *(Optional: Add more specific contribution guidelines if desired)*
 
 ## Screenshot
-![image](https://github.com/user-attachments/assets/576820bd-a7fe-4b5c-9f84-30ef3daa54b0)
+![image](https://github.com/user-attachments/assets/b3b2cb41-f453-42e8-a3c1-4cd84426248d)
+
 
